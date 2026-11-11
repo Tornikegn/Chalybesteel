@@ -1,0 +1,135 @@
+---
+import Logo from "@/components/Logo.astro";
+import { mainNav, productNav } from "@/config/nav";
+import { useTranslations } from "@/i18n";
+
+const t = useTranslations(Astro.currentLocale);
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+
+<header class="sticky top-0 z-50 border-b border-white/10 bg-ink text-paper">
+  <div class="container-site flex h-16 items-center justify-between gap-4 lg:h-[4.5rem]">
+    <a href="/" class="-m-1 shrink-0 p-1" aria-label="Chalybe Steel — home">
+      <Logo variant="dark" kind="mark" height={32} class="h-8 w-8 sm:hidden" />
+      <Logo variant="dark" kind="full" height={34} class="hidden h-[34px] w-auto sm:block" />
+    </a>
+
+    <nav aria-label={t("nav.main")} class="hidden lg:block">
+      <ul class="flex items-center gap-1">
+        {mainNav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
+              class="rounded-sm px-3 py-2 text-sm font-medium text-steel-light transition-colors hover:text-paper aria-[current=page]:text-paper aria-[current=page]:underline aria-[current=page]:decoration-forge aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-[10px]"
+            >
+              {t(item.key)}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href="/request-a-quote" class="btn-primary px-3.5 py-2.5 text-[0.8125rem] sm:px-5">
+        {t("cta.quote")}
+      </a>
+      <button
+        type="button"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-sm border border-white/15 text-paper hover:bg-white/5 lg:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        data-nav-toggle
+        data-label-open={t("nav.menu")}
+        data-label-close={t("nav.close")}
+      >
+        <span class="sr-only" data-nav-label>
+          {t("nav.menu")}
+        </span>
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          aria-hidden="true"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        >
+          <path data-icon-open d="M3 6h14M3 10h14M3 14h14"></path>
+          <path data-icon-close class="hidden" d="M5 5l10 10M15 5L5 15"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav
+    id="mobile-nav"
+    aria-label={t("nav.main")}
+    class="hidden max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-white/10 bg-ink lg:hidden"
+    data-nav-panel
+  >
+    <ul class="container-site py-4">
+      {mainNav.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            aria-current={isActive(item.href) ? "page" : undefined}
+            class="block border-b border-white/5 py-3 text-base font-medium text-paper aria-[current=page]:text-forge"
+          >
+            {t(item.key)}
+          </a>
+          {item.href === "/products" && (
+            <ul class="border-b border-white/5 py-1 pl-4">
+              {productNav.map((p) => (
+                <li>
+                  <a
+                    href={p.href}
+                    aria-current={isActive(p.href) ? "page" : undefined}
+                    class="block py-2 font-mono text-sm text-steel-light hover:text-paper aria-[current=page]:text-forge"
+                  >
+                    {t(p.key)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+      <li>
+        <a href="/request-a-quote" class="block py-3 text-base font-medium text-paper">
+          {t("nav.contact")}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+  const panel = document.querySelector<HTMLElement>("[data-nav-panel]");
+  if (toggle && panel) {
+    const label = toggle.querySelector("[data-nav-label]");
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      panel.classList.toggle("hidden", !open);
+      toggle.querySelector("[data-icon-open]")?.classList.toggle("hidden", open);
+      toggle.querySelector("[data-icon-close]")?.classList.toggle("hidden", !open);
+      if (label) {
+        label.textContent = (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? "";
+      }
+    };
+    toggle.addEventListener("click", () =>
+      setOpen(toggle.getAttribute("aria-expanded") !== "true"),
+    );
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    window.matchMedia("(min-width: 64rem)").addEventListener("change", (e) => {
+      if (e.matches) setOpen(false);
+    });
+  }
+</script>

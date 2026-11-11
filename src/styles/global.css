@@ -1,0 +1,142 @@
+@import "@fontsource-variable/archivo";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Brand palette (from logo) */
+  --color-ink: #121417; /* near-black */
+  --color-graphite: #16191d;
+  --color-graphite-2: #1e2227;
+  --color-graphite-3: #2a2f36;
+  --color-steel: #6b7480; /* decorative lines only on dark; fails AA as text on paper */
+  --color-steel-dark: #565e68; /* muted text on light, 5.8:1 on paper */
+  --color-steel-light: #9aa3ad; /* muted text on dark, 7.2:1 on ink */
+  --color-paper: #f3f2ef;
+  --color-paper-2: #e7e5e0;
+  --color-line: #d6d4ce;
+  --color-forge: #d9622b; /* accent: fills, and text on dark only */
+  --color-forge-hover: #e8743e;
+  --color-forge-ink: #a9461a; /* accent text on light backgrounds, 5.2:1 on paper */
+
+  --container-site: 76rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    @apply bg-paper font-sans text-graphite antialiased;
+    font-feature-settings: "kern";
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight text-balance;
+    font-variation-settings: "wdth" 100;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-forge);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  ::selection {
+    background: var(--color-forge);
+    color: var(--color-ink);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-sm px-5 py-3 text-sm font-semibold tracking-wide transition-colors duration-150;
+}
+
+@utility link {
+  @apply font-medium text-forge-ink underline decoration-forge-ink/30 underline-offset-4 hover:decoration-forge-ink;
+}
+
+@layer components {
+  .container-site {
+    @apply mx-auto w-full max-w-(--container-site) px-4 sm:px-6 lg:px-8;
+  }
+  .eyebrow {
+    @apply font-mono text-xs font-medium tracking-[0.14em] uppercase;
+  }
+  .spec-label {
+    @apply font-mono text-xs tracking-wider;
+  }
+  /* Dark text on orange: 5.0:1. White on orange fails AA (3.7:1). */
+  .btn-primary {
+    @apply btn bg-forge text-ink hover:bg-forge-hover;
+  }
+  .btn-outline-dark {
+    @apply btn border border-steel text-paper hover:border-paper hover:bg-white/5;
+  }
+  .btn-outline-light {
+    @apply btn border border-graphite/30 text-graphite hover:border-graphite hover:bg-graphite/5;
+  }
+  .bg-grid-dark {
+    background-image:
+      linear-gradient(to right, rgb(154 163 173 / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(154 163 173 / 0.07) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .bg-grid-light {
+    background-image:
+      linear-gradient(to right, rgb(22 25 29 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(22 25 29 / 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .todo {
+    @apply rounded-sm border border-dashed border-forge-ink/60 bg-forge/10 px-1.5 py-0.5 font-mono text-[0.8em] text-forge-ink;
+  }
+  .num {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* Long-form prose from markdown content */
+  .prose-steel {
+    @apply max-w-none text-[1.0625rem] leading-relaxed text-graphite;
+  }
+  .prose-steel h2 {
+    @apply mt-12 mb-4 border-t border-line pt-8 text-2xl font-bold first:mt-0 first:border-0 first:pt-0;
+  }
+  .prose-steel h3 {
+    @apply mt-8 mb-3 text-lg font-semibold;
+  }
+  .prose-steel p {
+    @apply mb-4 max-w-[68ch];
+  }
+  .prose-steel ul {
+    @apply mb-5 max-w-[68ch] space-y-2;
+  }
+  .prose-steel ul > li {
+    @apply relative pl-6;
+  }
+  .prose-steel ul > li::before {
+    content: "";
+    @apply absolute top-[0.7em] left-0 h-px w-3 bg-forge;
+  }
+  .prose-steel strong {
+    @apply font-semibold text-ink;
+  }
+  .prose-steel a {
+    @apply link;
+  }
+}

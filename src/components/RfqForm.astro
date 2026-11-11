@@ -1,0 +1,575 @@
+---
+/**
+ * RFQ form. Posts multipart/form-data to PUBLIC_RFQ_ENDPOINT
+ * (default: the Cloudflare Pages Function at /api/rfq).
+ * Works with Web3Forms or Formspree endpoints as well; see README.
+ */
+import { site, rfqMailto } from "@/config/site";
+
+const endpoint = import.meta.env.PUBLIC_RFQ_ENDPOINT || "/api/rfq";
+const turnstileKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "";
+const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
+
+const input =
+  "mt-1.5 block w-full rounded-sm border border-line bg-white px-3 py-2.5 text-[0.9375rem] text-graphite placeholder:text-steel-dark/70 aria-[invalid=true]:border-red-700 focus:border-graphite";
+const label = "block text-sm font-semibold text-graphite";
+const hint = "mt-1 text-xs text-steel-dark";
+const err = "mt-1 hidden text-xs font-medium text-red-800";
+const legend = "eyebrow text-forge-ink";
+---
+
+<form
+  id="rfq-form"
+  action={endpoint}
+  method="post"
+  enctype="multipart/form-data"
+  novalidate
+  data-rfq
+  data-mailto={rfqMailto}
+  class="space-y-10"
+>
+  {web3formsKey && <input type="hidden" name="access_key" value={web3formsKey} />}
+  <input type="hidden" name="subject" value="New RFQ from chalybesteel.com" />
+
+  <!-- Honeypot: hidden from people, filled by bots -->
+  <div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+    <label for="rfq-website">Leave this field empty</label>
+    <input id="rfq-website" type="text" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <fieldset>
+    <legend class={legend}>01 · Contact</legend>
+    <div class="mt-5 grid gap-5 sm:grid-cols-2">
+      <div>
+        <label for="rfq-name" class={label}>
+          Name <span class="text-forge-ink">*</span>
+        </label>
+        <input
+          id="rfq-name"
+          name="name"
+          type="text"
+          required
+          autocomplete="name"
+          maxlength="120"
+          class={input}
+          aria-describedby="rfq-name-err"
+        />
+        <p id="rfq-name-err" class={err} data-error-for="name">
+          Enter your name.
+        </p>
+      </div>
+      <div>
+        <label for="rfq-company" class={label}>
+          Company <span class="text-forge-ink">*</span>
+        </label>
+        <input
+          id="rfq-company"
+          name="company"
+          type="text"
+          required
+          autocomplete="organization"
+          maxlength="160"
+          class={input}
+          aria-describedby="rfq-company-err"
+        />
+        <p id="rfq-company-err" class={err} data-error-for="company">
+          Enter your company name.
+        </p>
+      </div>
+      <div>
+        <label for="rfq-email" class={label}>
+          Email <span class="text-forge-ink">*</span>
+        </label>
+        <input
+          id="rfq-email"
+          name="email"
+          type="email"
+          required
+          autocomplete="email"
+          maxlength="160"
+          class={input}
+          aria-describedby="rfq-email-err"
+        />
+        <p id="rfq-email-err" class={err} data-error-for="email">
+          Enter a valid email address.
+        </p>
+      </div>
+      <div>
+        <label for="rfq-phone" class={label}>
+          Phone
+        </label>
+        <input
+          id="rfq-phone"
+          name="phone"
+          type="tel"
+          autocomplete="tel"
+          maxlength="40"
+          class={input}
+          aria-describedby="rfq-phone-hint"
+        />
+        <p id="rfq-phone-hint" class={hint}>
+          Optional, with country code.
+        </p>
+      </div>
+      <div class="sm:col-span-2">
+        <label for="rfq-country" class={label}>
+          Country <span class="text-forge-ink">*</span>
+        </label>
+        <input
+          id="rfq-country"
+          name="country"
+          type="text"
+          required
+          autocomplete="country-name"
+          maxlength="80"
+          class={input}
+          aria-describedby="rfq-country-err"
+        />
+        <p id="rfq-country-err" class={err} data-error-for="country">
+          Enter your country.
+        </p>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class={legend}>02 · Product</legend>
+    <div class="mt-5 grid gap-5 sm:grid-cols-2">
+      <div>
+        <label for="rfq-product" class={label}>
+          Product <span class="text-forge-ink">*</span>
+        </label>
+        <select
+          id="rfq-product"
+          name="product"
+          required
+          class={input}
+          aria-describedby="rfq-product-err"
+        >
+          <option value="">Select…</option>
+          <option value="Casing">Casing</option>
+          <option value="Tubing">Tubing</option>
+          <option value="Accessories">Accessories (pup joints, couplings, crossovers)</option>
+        </select>
+        <p id="rfq-product-err" class={err} data-error-for="product">
+          Select a product.
+        </p>
+      </div>
+      <div>
+        <label for="rfq-od" class={label}>
+          OD
+        </label>
+        <input
+          id="rfq-od"
+          name="od"
+          type="text"
+          maxlength="60"
+          placeholder='e.g. 9-5/8" or 244.48 mm'
+          class={input}
+        />
+      </div>
+      <div>
+        <label for="rfq-weight" class={label}>
+          Weight or wall thickness
+        </label>
+        <input
+          id="rfq-weight"
+          name="weight_wall"
+          type="text"
+          maxlength="60"
+          placeholder="e.g. 47 lb/ft or 0.472 in"
+          class={input}
+        />
+      </div>
+      <div>
+        <label for="rfq-grade" class={label}>
+          Grade
+        </label>
+        <input
+          id="rfq-grade"
+          name="grade"
+          type="text"
+          maxlength="60"
+          list="rfq-grade-list"
+          placeholder="e.g. L80-1, P110"
+          class={input}
+        />
+        <datalist id="rfq-grade-list">
+          {[
+            "H40",
+            "J55",
+            "K55",
+            "N80-1",
+            "N80Q",
+            "R95",
+            "M65",
+            "L80-1",
+            "L80 9Cr",
+            "L80 13Cr",
+            "C90",
+            "T95",
+            "C110",
+            "P110",
+            "Q125",
+          ].map((g) => (
+            <option value={g} />
+          ))}
+        </datalist>
+      </div>
+      <div>
+        <label for="rfq-connection" class={label}>
+          Connection
+        </label>
+        <input
+          id="rfq-connection"
+          name="connection"
+          type="text"
+          maxlength="80"
+          list="rfq-conn-list"
+          placeholder="e.g. BTC, EUE, premium per spec"
+          class={input}
+        />
+        <datalist id="rfq-conn-list">
+          {["STC", "LTC", "BTC", "NUE", "EUE", "Premium / semi-premium (specify)", "Plain end"].map(
+            (c) => (
+              <option value={c} />
+            ),
+          )}
+        </datalist>
+      </div>
+      <div>
+        <label for="rfq-psl" class={label}>
+          PSL
+        </label>
+        <select id="rfq-psl" name="psl" class={input}>
+          <option value="">Not specified</option>
+          <option>PSL-1</option>
+          <option>PSL-2</option>
+          <option>PSL-3</option>
+        </select>
+      </div>
+      <div class="grid grid-cols-[1fr_auto] gap-3">
+        <div>
+          <label for="rfq-qty" class={label}>
+            Quantity <span class="text-forge-ink">*</span>
+          </label>
+          <input
+            id="rfq-qty"
+            name="quantity"
+            type="number"
+            min="0"
+            step="any"
+            inputmode="decimal"
+            required
+            class={input}
+            aria-describedby="rfq-qty-err"
+          />
+        </div>
+        <div>
+          <label for="rfq-unit" class={label}>
+            Unit
+          </label>
+          <select id="rfq-unit" name="quantity_unit" class={input}>
+            <option value="m">m</option>
+            <option value="ft">ft</option>
+            <option value="tonnes">tonnes</option>
+          </select>
+        </div>
+        <p id="rfq-qty-err" class:list={[err, "col-span-2 -mt-2"]} data-error-for="quantity">
+          Enter a quantity.
+        </p>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class={legend}>03 · Delivery</legend>
+    <div class="mt-5 grid gap-5 sm:grid-cols-2">
+      <div class="sm:col-span-2">
+        <label for="rfq-dest" class={label}>
+          Destination port or site <span class="text-forge-ink">*</span>
+        </label>
+        <input
+          id="rfq-dest"
+          name="destination"
+          type="text"
+          required
+          maxlength="160"
+          class={input}
+          aria-describedby="rfq-dest-err"
+        />
+        <p id="rfq-dest-err" class={err} data-error-for="destination">
+          Enter the destination port or site.
+        </p>
+      </div>
+      <div>
+        <label for="rfq-date" class={label}>
+          Required delivery date
+        </label>
+        <input id="rfq-date" name="delivery_date" type="date" class={input} />
+      </div>
+      <div>
+        <label for="rfq-incoterm" class={label}>
+          Incoterm
+        </label>
+        <select id="rfq-incoterm" name="incoterm" class={input}>
+          <option value="">Not sure / to discuss</option>
+          <option>FOB</option>
+          <option>CFR</option>
+          <option>CIF</option>
+          <option>DAP</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class={legend}>04 · Details</legend>
+    <div class="mt-5 grid gap-5">
+      <div>
+        <label for="rfq-file" class={label}>
+          Specification sheet
+        </label>
+        <input
+          id="rfq-file"
+          name="attachment"
+          type="file"
+          accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.png,.jpg,.jpeg"
+          class="mt-1.5 block w-full text-sm text-steel-dark file:mr-4 file:rounded-sm file:border-0 file:bg-graphite file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-paper hover:file:bg-ink"
+          aria-describedby="rfq-file-hint rfq-file-err"
+        />
+        <p id="rfq-file-hint" class={hint}>
+          Optional. PDF, Word, Excel or image, up to 5 MB.
+        </p>
+        <p id="rfq-file-err" class={err} data-error-for="attachment">
+          The file must be 5 MB or smaller and of an accepted type.
+        </p>
+      </div>
+      <div>
+        <label for="rfq-message" class={label}>
+          Message
+        </label>
+        <textarea
+          id="rfq-message"
+          name="message"
+          rows="5"
+          maxlength="5000"
+          class={input}
+          placeholder="Supplementary requirements, end-user specification, inspection scope, packing…"
+        ></textarea>
+      </div>
+      <div class="flex gap-3">
+        <input
+          id="rfq-consent"
+          name="consent"
+          type="checkbox"
+          value="yes"
+          required
+          class="mt-1 h-4 w-4 shrink-0 accent-[#A9461A]"
+          aria-describedby="rfq-consent-err"
+        />
+        <div>
+          <label for="rfq-consent" class="text-sm text-graphite">
+            I agree that Chalybe Steel may use these details to respond to my enquiry, as described
+            in the{" "}
+            <a href="/privacy" class="link">
+              Privacy Policy
+            </a>
+            . <span class="text-forge-ink">*</span>
+          </label>
+          <p id="rfq-consent-err" class={err} data-error-for="consent">
+            Please confirm to continue.
+          </p>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  {turnstileKey && (
+    <div>
+      <div
+        class="cf-turnstile"
+        data-sitekey={turnstileKey}
+        data-theme="light"
+        data-size="flexible"
+      />
+      <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+    </div>
+  )}
+
+  <div class="flex flex-col gap-4 border-t border-line pt-8 sm:flex-row sm:items-center sm:justify-between">
+    <p class="text-xs text-steel-dark">
+      <span class="text-forge-ink">*</span> Required
+    </p>
+    <button
+      type="submit"
+      class="btn-primary px-8 py-3.5 text-base disabled:cursor-wait disabled:opacity-70"
+      data-submit
+    >
+      <span data-submit-label>Send RFQ</span>
+    </button>
+  </div>
+
+  <div role="status" aria-live="polite" class="empty:hidden" data-status></div>
+
+  <noscript>
+    <p class="border-l-2 border-forge bg-white p-4 text-sm">
+      This form needs JavaScript. Alternatively, email your RFQ to
+      <a href={rfqMailto} class="link">
+        {site.email}
+      </a>
+      .
+    </p>
+  </noscript>
+</form>
+
+<template id="rfq-success">
+  <div class="border border-line border-l-4 border-l-forge bg-white p-6" tabindex="-1" data-focus>
+    <p class="font-semibold text-graphite">Thank you, your RFQ has been sent.</p>
+    <p class="mt-2 text-sm text-steel-dark">
+      We will review the specification and reply by email. To add drawings or further details, write
+      to{" "}
+      <a href={`mailto:${site.email}`} class="link">
+        {site.email}
+      </a>
+      .
+    </p>
+  </div>
+</template>
+
+<template id="rfq-error">
+  <div
+    class="border border-red-800/40 border-l-4 border-l-red-800 bg-white p-6"
+    tabindex="-1"
+    data-focus
+  >
+    <p class="font-semibold text-graphite">Your RFQ could not be sent.</p>
+    <p class="mt-2 text-sm text-steel-dark">
+      Please try again, or{" "}
+      <a href={rfqMailto} class="link" data-mailto-fallback>
+        email it to {site.email}
+      </a>{" "}
+      — the link opens a pre-filled message with the details entered above.
+    </p>
+  </div>
+</template>
+
+<script>
+  const MAX_BYTES = 5 * 1024 * 1024;
+  const ACCEPTED = /\.(pdf|docx?|xlsx?|csv|png|jpe?g)$/i;
+
+  const form = document.querySelector<HTMLFormElement>("[data-rfq]");
+  if (form) {
+    const status = form.querySelector<HTMLElement>("[data-status]")!;
+    const submit = form.querySelector<HTMLButtonElement>("[data-submit]")!;
+    const submitLabel = form.querySelector<HTMLElement>("[data-submit-label]")!;
+
+    const fieldError = (name: string) =>
+      form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+
+    const setInvalid = (
+      el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
+      bad: boolean,
+    ) => {
+      el.setAttribute("aria-invalid", String(bad));
+      fieldError(el.name)?.classList.toggle("hidden", !bad);
+    };
+
+    const checkFile = (input: HTMLInputElement) => {
+      const f = input.files?.[0];
+      const bad = !!f && (f.size > MAX_BYTES || !ACCEPTED.test(f.name));
+      input.setCustomValidity(bad ? "invalid" : "");
+      return !bad;
+    };
+
+    const fields = [
+      ...form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        "input:not([type=hidden]):not([name=website]), select, textarea",
+      ),
+    ];
+
+    for (const el of fields) {
+      el.addEventListener("blur", () => {
+        if (el.getAttribute("aria-invalid") !== null || el.value)
+          setInvalid(el, !el.checkValidity());
+      });
+      el.addEventListener("input", () => {
+        if (el.getAttribute("aria-invalid") === "true") setInvalid(el, !el.checkValidity());
+      });
+    }
+    const file = form.querySelector<HTMLInputElement>('input[type="file"]');
+    file?.addEventListener("change", () => {
+      checkFile(file);
+      setInvalid(file, !file.checkValidity());
+    });
+
+    const buildMailto = () => {
+      const base = form.dataset.mailto ?? "";
+      const data = new FormData(form);
+      const skip = new Set([
+        "website",
+        "access_key",
+        "subject",
+        "attachment",
+        "consent",
+        "cf-turnstile-response",
+      ]);
+      const lines: string[] = [];
+      data.forEach((v, k) => {
+        if (!skip.has(k) && typeof v === "string" && v.trim())
+          lines.push(`${k.replace(/_/g, " ")}: ${v.trim()}`);
+      });
+      return `${base}&body=${encodeURIComponent(lines.join("\n"))}`;
+    };
+
+    const show = (id: "rfq-success" | "rfq-error") => {
+      const tpl = document.getElementById(id) as HTMLTemplateElement | null;
+      if (!tpl) return;
+      status.replaceChildren(tpl.content.cloneNode(true));
+      const fallback = status.querySelector<HTMLAnchorElement>("[data-mailto-fallback]");
+      if (fallback) fallback.href = buildMailto();
+      status.querySelector<HTMLElement>("[data-focus]")?.focus();
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.replaceChildren();
+      if (file) checkFile(file);
+
+      let firstInvalid: HTMLElement | null = null;
+      for (const el of fields) {
+        const bad = !el.checkValidity();
+        setInvalid(el, bad);
+        if (bad && !firstInvalid) firstInvalid = el;
+      }
+      if (firstInvalid) {
+        firstInvalid.focus();
+        return;
+      }
+
+      submit.disabled = true;
+      submitLabel.textContent = "Sending…";
+      try {
+        const res = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || json.success === false || json.ok === false)
+          throw new Error(json.message || res.statusText);
+        show("rfq-success");
+        form.reset();
+        fields.forEach((el) => el.removeAttribute("aria-invalid"));
+        (window as unknown as { turnstile?: { reset: () => void } }).turnstile?.reset();
+      } catch {
+        show("rfq-error");
+        (window as unknown as { turnstile?: { reset: () => void } }).turnstile?.reset();
+      } finally {
+        submit.disabled = false;
+        submitLabel.textContent = "Send RFQ";
+      }
+    });
+  }
+</script>

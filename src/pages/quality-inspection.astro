@@ -1,0 +1,160 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import CtaBand from "@/components/ui/CtaBand.astro";
+import Photo from "@/components/ui/Photo.astro";
+import { photos } from "@/config/images";
+
+const pillars = [
+  {
+    code: "01",
+    t: "Mill qualification",
+    d: "Orders are placed only with mills that hold a current API 5CT licence for the product and grade, and that can demonstrate capacity for the size range and PSL required. We review licence scope, quality system, process route and recent test records before quoting.",
+  },
+  {
+    code: "02",
+    t: "Mill test certificates",
+    d: "Every shipment is supplied with mill test certificates to EN 10204 type 3.1, stating heat chemistry, mechanical test results, hydrostatic test pressure and NDT. Type 3.2 certificates are issued where an independent inspector witnesses and countersigns.",
+  },
+  {
+    code: "03",
+    t: "Third-party inspection",
+    d: "Independent inspection can be arranged at the mill on request, by an agency nominated by the client or proposed by us — for example SGS, Bureau Veritas or TÜV. Scope ranges from document review to full witness of testing, dimensional checks and loading.",
+  },
+  {
+    code: "04",
+    t: "Non-destructive testing",
+    d: "Full-body NDT by electromagnetic inspection (EMI) and/or ultrasonic testing (UT) per API 5CT and the PSL specified, with end-area inspection on threaded ends. Supplementary NDT per the purchase order.",
+  },
+  {
+    code: "05",
+    t: "Drift and hydrostatic testing",
+    d: "Each length is full-length drifted with a standard or special (alternate) drift mandrel and hydrostatically tested to the pressure required by API 5CT or the purchase order.",
+  },
+  {
+    code: "06",
+    t: "Traceability",
+    d: "Heat numbers are stencilled and die-stamped on each length and carried through to the certificates, tally sheets and packing lists, giving traceability from the steel heat to the joint on the rack.",
+  },
+];
+
+const checks = [
+  "Thread inspection and gauging per API 5B",
+  "Visual and dimensional inspection: OD, wall, length, straightness, ends",
+  "Coupling make-up and power-tight verification",
+  "Thread protectors fitted and thread compound applied",
+  "Marking and colour-band verification",
+  "Pipe tally and bundle count before loading",
+];
+---
+
+<BaseLayout
+  title="Quality & Inspection"
+  description="Mill qualification, EN 10204 3.1/3.2 mill test certificates, third-party inspection on request, EMI/UT NDT, drift and hydrostatic testing, and full traceability for API 5CT casing and tubing."
+>
+  <PageHero
+    eyebrow="Quality & inspection"
+    title="Verified at the mill, documented to the joint."
+    lead="Quality starts with choosing the right mill and is confirmed by testing, independent inspection and complete documentation before the pipe leaves the mill."
+    breadcrumbs={[{ label: "Home", href: "/" }, { label: "Quality & Inspection" }]}
+  />
+
+  <section class="py-16 sm:py-20" aria-label="Quality assurance">
+    <ul class="container-site grid gap-px overflow-hidden border border-line bg-line md:grid-cols-2 lg:grid-cols-3">
+      {pillars.map((p) => (
+        <li class="bg-white p-7 sm:p-8">
+          <span class="font-mono text-xs text-forge-ink">{p.code}</span>
+          <h2 class="mt-3 text-xl font-bold">{p.t}</h2>
+          <p class="mt-3 text-sm leading-relaxed text-steel-dark">{p.d}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="border-y border-line bg-white py-16 sm:py-20" aria-labelledby="packing">
+    <div class="container-site grid gap-12 lg:grid-cols-2 lg:items-center">
+      <div>
+        <p class="eyebrow text-forge-ink">Pre-shipment</p>
+        <h2 id="packing" class="mt-3 text-3xl font-bold">
+          Packing, marking and final checks
+        </h2>
+        <p class="mt-4 max-w-xl text-steel-dark">
+          Before loading, pipe is checked against the order and prepared for transit. Casing and
+          tubing are bundled or loose-loaded according to size, with thread protectors on both ends,
+          and marked per API 5CT plus any client-specific marking.
+        </p>
+        <ul class="mt-8 divide-y divide-line border-y border-line">
+          {checks.map((c) => (
+            <li class="flex gap-4 py-3.5 text-sm">
+              <svg
+                class="mt-0.5 h-4 w-4 shrink-0"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle cx="8" cy="8" r="7" stroke="#A9461A" />
+                <path d="M5 8.2l2 2 4-4.2" stroke="#A9461A" stroke-width="1.5" />
+              </svg>
+              {c}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="aspect-[4/3] overflow-hidden border border-line bg-ink">
+        <Photo photo={photos.quality}>
+          <svg viewBox="0 0 480 360" class="h-full w-full" fill="none" aria-hidden="true">
+            <rect width="480" height="360" fill="#121417"></rect>
+            <g stroke="#9AA3AD" stroke-opacity="0.08">
+              {Array.from({ length: 10 }, (_, i) => (
+                <line x1={i * 48} y1="0" x2={i * 48} y2="360" />
+              ))}
+              {Array.from({ length: 8 }, (_, i) => (
+                <line x1="0" y1={i * 48} x2="480" y2={i * 48} />
+              ))}
+            </g>
+            {[0, 1, 2, 3].map((row) =>
+              [0, 1, 2, 3, 4, 5].map((col) => {
+                const cx = 90 + col * 60 + (row % 2) * 30;
+                const cy = 290 - row * 52;
+                return col + (row % 2) < 6 ? (
+                  <g>
+                    <circle cx={cx} cy={cy} r="26" stroke="#F3F2EF" stroke-width="1.25" />
+                    <circle cx={cx} cy={cy} r="20" stroke="#6B7480" />
+                    {row === 2 && col === 2 && (
+                      <circle cx={cx} cy={cy} r="9" stroke="#D9622B" stroke-width="2" />
+                    )}
+                  </g>
+                ) : null;
+              }),
+            )}
+            <text
+              x="24"
+              y="36"
+              font-family="IBM Plex Mono, monospace"
+              font-size="11"
+              fill="#9AA3AD"
+              letter-spacing="1.5"
+            >
+              BUNDLE · END VIEW
+            </text>
+            <text
+              x="24"
+              y="54"
+              font-family="IBM Plex Mono, monospace"
+              font-size="11"
+              fill="#D9622B"
+              letter-spacing="1.5"
+            >
+              HEAT NO. → JOINT NO.
+            </text>
+          </svg>
+        </Photo>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Specify the inspection you need."
+    text="Tell us the inspection scope, certificate type and any client or end-user specification with your enquiry, and we will build it into the quotation."
+  />
+</BaseLayout>

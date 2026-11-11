@@ -1,0 +1,269 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PipeSection from "@/components/illustrations/PipeSection.astro";
+import Photo from "@/components/ui/Photo.astro";
+import { photos } from "@/config/images";
+import ProductGlyph from "@/components/illustrations/ProductGlyph.astro";
+import SectionHeading from "@/components/ui/SectionHeading.astro";
+import CtaBand from "@/components/ui/CtaBand.astro";
+import { site } from "@/config/site";
+
+const products = (await getCollection("products")).sort((a, b) => a.data.order - b.data.order);
+
+const facts = [
+  { k: "Standard", v: "API 5CT · PSL-1/2/3" },
+  { k: "Casing", v: 'Casing 4½"–20"' },
+  { k: "Tubing", v: 'Tubing 1.050"–4½"' },
+  { k: "Inspection", v: "Third-party inspection" },
+];
+
+const steps = [
+  {
+    t: "Enquiry & spec review",
+    d: "We check size, weight, grade, connection, PSL and supplementary requirements against API 5CT and your purchase specification.",
+  },
+  {
+    t: "Mill selection & quotation",
+    d: "We match the order to a qualified mill for the size and grade, and quote price, lead time and Incoterm.",
+  },
+  {
+    t: "Production & inspection",
+    d: "Production is followed through to testing. Third-party inspection is arranged at the mill where specified.",
+  },
+  {
+    t: "Documentation & shipping",
+    d: "Mill test certificates, inspection reports and export documents are compiled and issued with the shipment.",
+  },
+  {
+    t: "Delivery",
+    d: "Delivery to port or to the project site on the agreed Incoterm, with joint tally and packing list.",
+  },
+];
+
+const quality = [
+  "Mills qualified for the product, size range and grade",
+  "Mill test certificates to EN 10204 3.1, or 3.2 with independent inspection",
+  "Hydrostatic, drift and full-body NDT per API 5CT and order requirements",
+  "Heat-to-joint traceability through marking and documentation",
+];
+
+const applications = [
+  {
+    t: "Onshore",
+    d: "Surface, intermediate and production strings for conventional and unconventional land wells.",
+  },
+  {
+    t: "Offshore",
+    d: "Casing and tubing for platform and subsea wells, with packing and documentation for offshore logistics.",
+  },
+  {
+    t: "Sour service",
+    d: "L80, C90 and T95 grades for H₂S environments, qualified to NACE MR0175 / ISO 15156.",
+  },
+  {
+    t: "HPHT",
+    d: "High-strength grades and premium connections for high-pressure, high-temperature wells, on request.",
+  },
+];
+
+const catalog = {
+  "@context": "https://schema.org",
+  "@type": "OfferCatalog",
+  name: "API 5CT OCTG products",
+  url: `${site.url}/products`,
+  itemListElement: products.map((p, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    item: {
+      "@type": "Product",
+      name: `${p.data.title} — ${p.data.seoTitle}`,
+      description: p.data.description,
+      url: `${site.url}/products/${p.id}`,
+      brand: { "@type": "Brand", name: site.name },
+      category: "Oil country tubular goods (OCTG)",
+    },
+  })),
+};
+---
+
+<BaseLayout
+  title="Chalybe Steel"
+  description="API 5CT seamless casing and tubing (OCTG) sourced from qualified mills, with third-party inspection, full documentation and delivery to site. Send your RFQ to sales@chalybesteel.com."
+  jsonLd={[catalog]}
+>
+  <!-- Hero -->
+  <section class="relative overflow-hidden bg-ink text-paper">
+    <div class="bg-grid-dark absolute inset-0" aria-hidden="true"></div>
+    <div class="relative container-site grid items-center gap-12 pt-14 pb-16 sm:pt-20 lg:grid-cols-12 lg:pt-24 lg:pb-24">
+      <div class="lg:col-span-7">
+        <p class="eyebrow text-forge">OCTG · API 5CT · Seamless</p>
+        <h1 class="mt-5 text-[2.5rem] leading-[1.05] font-extrabold sm:text-6xl lg:text-[4.25rem]">
+          API 5CT seamless casing &amp; tubing, sourced from qualified mills.
+        </h1>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-steel-light">
+          We source to your specification, arrange independent inspection at the mill, and deliver
+          documented pipe to port or project site.
+        </p>
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <a href="/request-a-quote" class="btn-primary px-6 py-3.5 text-base">
+            Request a Quote
+          </a>
+          <a href="/products" class="btn-outline-dark px-6 py-3.5 text-base">
+            View Products
+          </a>
+        </div>
+      </div>
+      <div class="lg:col-span-5">
+        <Photo photo={photos.homeHero} class="aspect-[4/3] border border-white/10">
+          <PipeSection class="mx-auto w-full max-w-[26rem] lg:max-w-none" />
+        </Photo>
+      </div>
+    </div>
+
+    <!-- Fact strip -->
+    <div class="relative border-t border-white/10 bg-graphite/70">
+      <dl class="container-site grid grid-cols-2 lg:grid-cols-4">
+        {facts.map((f, i) => (
+          <div
+            class:list={[
+              "border-white/10 py-5 pr-4 lg:py-6",
+              i % 2 === 1 && "border-l pl-4 lg:pl-6",
+              i === 2 && "border-t lg:border-t-0 lg:border-l lg:pl-6",
+              i === 3 && "border-t lg:border-t-0",
+            ]}
+          >
+            <dt class="sr-only">{f.k}</dt>
+            <dd class="flex items-center gap-2.5 font-mono text-[0.8125rem] text-paper sm:text-sm">
+              <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-forge" aria-hidden="true" />
+              {f.v}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section class="py-20 sm:py-24" aria-labelledby="products-heading">
+    <div class="container-site">
+      <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <SectionHeading
+          id="products-heading"
+          eyebrow="Products"
+          title="Casing, tubing and the accessories to complete the string."
+        />
+        <a href="/products" class="link shrink-0 text-sm">
+          All products →
+        </a>
+      </div>
+      <ul class="mt-12 grid gap-px overflow-hidden border border-line bg-line md:grid-cols-3">
+        {products.map((p) => (
+          <li class="group relative flex flex-col bg-white p-7 transition-colors hover:bg-paper sm:p-8">
+            <ProductGlyph kind={p.data.kind} class="h-20 w-auto self-start text-graphite" />
+            <p class="spec-label mt-8 text-steel-dark">{p.data.specLabel}</p>
+            <h3 class="mt-2 text-2xl font-bold">
+              <a href={`/products/${p.id}`} class="after:absolute after:inset-0">
+                {p.data.title}
+              </a>
+            </h3>
+            {p.data.sizeRange && (
+              <p class="num mt-1 font-mono text-sm text-forge-ink">{p.data.sizeRange}</p>
+            )}
+            <p class="mt-4 flex-1 text-steel-dark">{p.data.summary}</p>
+            <span
+              class="mt-6 text-sm font-semibold text-graphite group-hover:text-forge-ink"
+              aria-hidden="true"
+            >
+              Specifications →
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- How we work -->
+  <section class="border-y border-line bg-white py-20 sm:py-24" aria-labelledby="process-heading">
+    <div class="container-site">
+      <SectionHeading
+        id="process-heading"
+        eyebrow="How we work"
+        title="From enquiry to delivery, one point of contact."
+        lead="As a trading company we manage the order end to end: specification, mill, inspection, documents and freight."
+      />
+      <div class="relative mt-14">
+        <div
+          class="absolute top-5 right-0 left-0 hidden h-px bg-line md:block"
+          aria-hidden="true"
+        ></div>
+        <ol class="relative grid gap-10 md:grid-cols-5 md:gap-6">
+          {steps.map((s, i) => (
+            <li class="relative flex gap-5 md:block">
+              <span class="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-graphite bg-white font-mono text-sm font-medium">
+                {i + 1}
+              </span>
+              <div>
+                <h3 class="text-lg font-semibold md:mt-6">{s.t}</h3>
+                <p class="mt-2 text-sm leading-relaxed text-steel-dark">{s.d}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quality -->
+  <section class="bg-grid-light py-20 sm:py-24" aria-labelledby="quality-heading">
+    <div class="container-site grid gap-12 lg:grid-cols-2 lg:items-center">
+      <div>
+        <SectionHeading
+          id="quality-heading"
+          eyebrow="Quality & inspection"
+          title="Every joint documented and traceable to its heat."
+          lead="Quality is set at mill selection and confirmed by testing and inspection before shipment. Independent third-party inspection is available on any order."
+        />
+        <a href="/quality-inspection" class="link mt-8 inline-block text-sm">
+          Quality &amp; inspection →
+        </a>
+      </div>
+      <ul class="divide-y divide-line border-y border-line bg-white/70">
+        {quality.map((q, i) => (
+          <li class="flex gap-5 px-1 py-5">
+            <span class="num pt-0.5 font-mono text-xs text-forge-ink">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <span class="font-medium">{q}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Applications -->
+  <section class="bg-ink py-20 text-paper sm:py-24" aria-labelledby="apps-heading">
+    <div class="container-site">
+      <SectionHeading
+        id="apps-heading"
+        tone="dark"
+        eyebrow="Applications"
+        title="Specified for the well, not the catalogue."
+      />
+      <ul class="mt-12 grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+        {applications.map((a) => (
+          <li class="bg-ink p-7">
+            <svg viewBox="0 0 40 40" class="h-9 w-9" fill="none" aria-hidden="true">
+              <circle cx="20" cy="20" r="18" stroke="#6B7480" />
+              <circle cx="20" cy="20" r="7" stroke="#D9622B" stroke-width="1.5" />
+            </svg>
+            <h3 class="mt-6 text-xl font-semibold">{a.t}</h3>
+            <p class="mt-3 text-sm leading-relaxed text-steel-light">{a.d}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>

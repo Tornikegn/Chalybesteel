@@ -1,0 +1,28 @@
+---
+/**
+ * Marks a numeric value as "TODO: verify against current API 5CT edition".
+ * Hidden from screen readers; each table carries a visible legend instead.
+ * Turn off globally with site.showVerificationFlags once data is verified.
+ */
+import { site } from "@/config/site";
+import { useTranslations } from "@/i18n";
+
+interface Props {
+  tone?: "light" | "dark";
+}
+const { tone = "light" } = Astro.props;
+const t = useTranslations(Astro.currentLocale);
+---
+
+{site.showVerificationFlags && (
+  <sup
+    aria-hidden="true"
+    class:list={[
+      "ml-0.5 font-mono text-[0.7em]",
+      tone === "dark" ? "text-forge" : "text-forge-ink",
+    ]}
+    title={t("spec.verify")}
+  >
+    †
+  </sup>
+)}

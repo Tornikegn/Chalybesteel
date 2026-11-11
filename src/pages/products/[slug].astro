@@ -1,0 +1,207 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import CtaBand from "@/components/ui/CtaBand.astro";
+import SpecTable from "@/components/SpecTable.astro";
+import Verify from "@/components/Verify.astro";
+import VerifyLegend from "@/components/VerifyLegend.astro";
+import ProductGlyph from "@/components/illustrations/ProductGlyph.astro";
+import { site } from "@/config/site";
+
+export async function getStaticPaths() {
+  const products = await getCollection("products");
+  return products.map((p) => ({ params: { slug: p.id }, props: { product: p } }));
+}
+
+const { product } = Astro.props;
+const { data } = product;
+const { Content, headings } = await render(product);
+const others = (await getCollection("products"))
+  .filter((p) => p.id !== product.id)
+  .sort((a, b) => a.data.order - b.data.order);
+const hasTable = data.kind === "casing" || data.kind === "tubing";
+
+const toc = [
+  ...(hasTable ? [{ slug: "sizes", text: "Sizes & weights" }] : []),
+  ...(data.connections.length ? [{ slug: "connections", text: "Connections" }] : []),
+  ...(data.rangeLengths.length ? [{ slug: "range-lengths", text: "Range lengths" }] : []),
+  ...headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text })),
+];
+
+const productLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: data.seoTitle,
+  description: data.description,
+  category: "Oil country tubular goods (OCTG)",
+  url: `${site.url}/products/${product.id}`,
+  brand: { "@type": "Brand", name: site.name },
+  image: `${site.url}/og-image.png`,
+};
+---
+
+<BaseLayout title={data.seoTitle} description={data.description} jsonLd={[productLd]}>
+  <PageHero
+    eyebrow={data.specLabel}
+    title={data.seoTitle}
+    lead={data.summary}
+    breadcrumbs={[
+      { label: "Home", href: "/" },
+      { label: "Products", href: "/products" },
+      { label: data.title },
+    ]}
+  >
+    <dl class="mt-10 grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+      {data.facts.map((f) => (
+        <div class="bg-ink/90 p-5">
+          <dt class="eyebrow text-steel-light">{f.label}</dt>
+          <dd class="num mt-2 font-mono text-sm text-paper">{f.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </PageHero>
+
+  <div class="container-site grid gap-12 py-16 lg:grid-cols-12 lg:py-20">
+    <aside class="lg:col-span-3">
+      <nav aria-label="On this page" class="lg:sticky lg:top-28">
+        <p class="eyebrow text-steel-dark">On this page</p>
+        <ul class="mt-4 space-y-2 border-l border-line text-sm">
+          {toc.map((h) => (
+            <li>
+              <a
+                href={`#${h.slug}`}
+                class="-ml-px block border-l border-transparent pl-4 text-steel-dark hover:border-forge hover:text-graphite"
+              >
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a href="/request-a-quote" class="btn-primary mt-8 w-full max-lg:hidden">
+          Request a Quote
+        </a>
+      </nav>
+    </aside>
+
+    <div class="min-w-0 lg:col-span-9">
+      {hasTable && (
+        <section aria-labelledby="sizes" class="mb-16">
+          <h2 id="sizes" class="text-2xl font-bold">
+            Sizes &amp; weights
+          </h2>
+          <p class="mt-3 mb-6 max-w-[68ch] text-steel-dark">
+            Common API 5CT sizes and nominal weights. Filter by OD or grade; other sizes, weights
+            and wall thicknesses are quoted on request.
+          </p>
+          <SpecTable kind={data.kind as "casing" | "tubing"} />
+        </section>
+      )}
+
+      {data.connections.length > 0 && (
+        <section aria-labelledby="connections" class="mb-16">
+          <h2 id="connections" class="text-2xl font-bold">
+            Connections
+          </h2>
+          <ul class="mt-6 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
+            {data.connections.map((c) => (
+              <li class="bg-white p-5">
+                <p class="font-mono text-sm font-semibold text-forge-ink">{c.name}</p>
+                <p class="mt-2 text-sm text-steel-dark">{c.detail}</p>
+              </li>
+            ))}
+          </ul>
+          <p class="mt-3 text-sm text-steel-dark">
+            Proprietary premium connections are threaded by licensed threaders and specified by the
+            client.
+          </p>
+        </section>
+      )}
+
+      {data.rangeLengths.length > 0 && (
+        <section aria-labelledby="range-lengths" class="mb-16">
+          <h2 id="range-lengths" class="text-2xl font-bold">
+            Range lengths
+          </h2>
+          <div class="mt-6 overflow-x-auto border border-line bg-white">
+            <table class="num w-full text-left text-sm">
+              <thead class="bg-graphite text-paper">
+                <tr>
+                  <th scope="col" class="px-4 py-3 font-mono text-xs font-medium">
+                    Range
+                  </th>
+                  <th scope="col" class="px-4 py-3 font-mono text-xs font-medium">
+                    Length (ft)
+                  </th>
+                  <th scope="col" class="px-4 py-3 font-mono text-xs font-medium">
+                    Length (m)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.rangeLengths.map((r) => (
+                  <tr class="border-t border-line">
+                    <th scope="row" class="px-4 py-3 font-mono font-semibold">
+                      {r.range}
+                    </th>
+                    <td class="px-4 py-3 font-mono">
+                      {r.ft}
+                      <Verify />
+                    </td>
+                    <td class="px-4 py-3 font-mono">
+                      {r.m}
+                      <Verify />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-3 space-y-2">
+            <p class="text-sm text-steel-dark">
+              Range per purchase order; length tolerances and permissible variation per API 5CT.
+            </p>
+            <VerifyLegend />
+          </div>
+        </section>
+      )}
+
+      <div class="prose-steel">
+        <Content />
+      </div>
+
+      <p class="mt-10 border-l-2 border-forge bg-white p-4 text-sm text-steel-dark">
+        Indicative. Final specification per purchase order and the current edition of API 5CT. See{" "}
+        <a href="/grades-standards" class="link">
+          Grades &amp; Standards
+        </a>{" "}
+        for grade properties and colour-band identification.
+      </p>
+    </div>
+  </div>
+
+  <section class="border-t border-line bg-white py-16" aria-labelledby="related">
+    <div class="container-site">
+      <h2 id="related" class="text-2xl font-bold">
+        Related products
+      </h2>
+      <ul class="mt-8 grid gap-6 sm:grid-cols-2">
+        {others.map((p) => (
+          <li class="group relative flex items-center gap-6 border border-line bg-paper p-6 hover:border-graphite">
+            <ProductGlyph kind={p.data.kind} class="h-14 w-auto shrink-0 text-graphite" />
+            <div>
+              <p class="spec-label text-steel-dark">{p.data.specLabel}</p>
+              <h3 class="mt-1 text-xl font-bold">
+                <a href={`/products/${p.id}`} class="after:absolute after:inset-0">
+                  {p.data.title}
+                </a>
+              </h3>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand title={`Quote ${data.title.toLowerCase()} to your specification.`} />
+</BaseLayout>

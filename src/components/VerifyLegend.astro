@@ -1,0 +1,11 @@
+---
+import { site } from "@/config/site";
+import { useTranslations } from "@/i18n";
+const t = useTranslations(Astro.currentLocale);
+---
+
+{site.showVerificationFlags && (
+  <p class="font-mono text-xs text-forge-ink">
+    † <span class="todo">{t("spec.verify")}</span>
+  </p>
+)}

@@ -1,0 +1,101 @@
+---
+import Logo from "@/components/Logo.astro";
+import { site } from "@/config/site";
+import { mainNav, productNav, legalNav } from "@/config/nav";
+import { useTranslations } from "@/i18n";
+
+const t = useTranslations(Astro.currentLocale);
+const year = new Date().getFullYear();
+const companyNav = mainNav.filter((i) => i.href !== "/products");
+const linkClass = "text-paper/90 hover:text-forge";
+---
+
+<footer class="bg-ink text-steel-light">
+  <div class="container-site grid gap-10 py-16 sm:grid-cols-2 md:grid-cols-12">
+    <div class="sm:col-span-2 md:col-span-4">
+      <a href="/" class="inline-block p-1" aria-label="Chalybe Steel — home">
+        <Logo variant="dark" kind="full" height={36} class="h-9 w-auto" />
+      </a>
+      <p class="mt-6 max-w-xs text-sm leading-relaxed">
+        API 5CT seamless casing and tubing, sourced from qualified mills and delivered to site.
+      </p>
+      <p class="mt-6">
+        <span class="eyebrow block text-steel-light">{t("footer.contact")}</span>
+        <a
+          href={`mailto:${site.email}`}
+          class="mt-2 inline-block font-mono text-sm text-paper hover:text-forge"
+        >
+          {site.email}
+        </a>
+      </p>
+      {site.phone && <p class="mt-1 font-mono text-sm text-paper">{site.phone}</p>}
+      {site.address && site.address.length > 0 && (
+        <address class="mt-4 text-sm not-italic">
+          {site.address.map((line) => (
+            <span class="block">{line}</span>
+          ))}
+        </address>
+      )}
+    </div>
+
+    <nav aria-label={t("nav.products")} class="md:col-span-2 md:col-start-6">
+      <h2 class="eyebrow text-steel-light">{t("nav.products")}</h2>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        {productNav.map((i) => (
+          <li>
+            <a href={i.href} class={linkClass}>
+              {t(i.key)}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a href="/products" class={linkClass}>
+            All products
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <nav aria-label={t("footer.company")} class="md:col-span-3">
+      <h2 class="eyebrow text-steel-light">{t("footer.company")}</h2>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        {companyNav.map((i) => (
+          <li>
+            <a href={i.href} class={linkClass}>
+              {t(i.key)}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a href="/request-a-quote" class={linkClass}>
+            {t("nav.rfq")}
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <nav aria-label={t("footer.legal")} class="md:col-span-2">
+      <h2 class="eyebrow text-steel-light">{t("footer.legal")}</h2>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        {legalNav.map((i) => (
+          <li>
+            <a href={i.href} class={linkClass}>
+              {t(i.key)}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="container-site flex flex-col gap-3 py-6 text-xs leading-relaxed md:flex-row md:items-start md:justify-between md:gap-12">
+      <p class="shrink-0">
+        {`© ${year} ${site.name}`}
+        {site.legalName && <span> · {site.legalName}</span>}
+        {site.registrationNo && <span> · Reg. no. {site.registrationNo}</span>}
+      </p>
+      <p class="max-w-3xl md:text-right">{t("footer.trademark")}</p>
+    </div>
+  </div>
+</footer>

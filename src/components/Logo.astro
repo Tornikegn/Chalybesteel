@@ -1,0 +1,17 @@
+---
+interface Props {
+  variant?: "light" | "dark";
+  /** "full" = symbol + wordmark, "mark" = symbol only */
+  kind?: "full" | "mark";
+  class?: string;
+  height?: number;
+}
+const { variant = "light", kind = "full", class: className = "", height = 32 } = Astro.props;
+const base = kind === "full" ? "chalybe-pipe-logo" : "chalybe-pipe-mark";
+const src = `/brand/${base}${variant === "dark" ? "-dark" : ""}.svg`;
+// Source viewBoxes: logo 374.4×100, mark 100×100. Minimum logo height 28px.
+const h = Math.max(height, 28);
+const w = Math.round(kind === "full" ? h * 3.744 : h);
+---
+
+<img src={src} alt="Chalybe Steel" width={w} height={h} class={className} decoding="async" />

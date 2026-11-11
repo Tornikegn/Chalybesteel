@@ -1,0 +1,56 @@
+---
+/** Dark page header used on interior pages. */
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  breadcrumbs?: { label: string; href?: string }[];
+}
+const { eyebrow, title, lead, breadcrumbs = [] } = Astro.props;
+---
+
+<section class="relative overflow-hidden bg-ink text-paper">
+  <div class="bg-grid-dark absolute inset-0" aria-hidden="true"></div>
+  <svg
+    class="pointer-events-none absolute -top-24 -right-24 h-[28rem] w-[28rem] opacity-40 max-sm:hidden"
+    viewBox="0 0 200 200"
+    fill="none"
+    aria-hidden="true"
+  >
+    <circle cx="100" cy="100" r="96" stroke="#6B7480" stroke-width="0.5"></circle>
+    <circle cx="100" cy="100" r="74" stroke="#6B7480" stroke-width="0.5"></circle>
+    <circle cx="100" cy="100" r="30" stroke="#D9622B" stroke-width="0.75"></circle>
+    <path
+      d="M0 100h200M100 0v200"
+      stroke="#6B7480"
+      stroke-width="0.4"
+      stroke-dasharray="6 2 1 2"
+    ></path>
+  </svg>
+  <div class="relative container-site py-14 sm:py-20">
+    {breadcrumbs.length > 0 && (
+      <nav aria-label="Breadcrumb" class="mb-6">
+        <ol class="flex flex-wrap items-center gap-2 font-mono text-xs text-steel-light">
+          {breadcrumbs.map((b, i) => (
+            <li class="flex items-center gap-2">
+              {i > 0 && <span aria-hidden="true">/</span>}
+              {b.href ? (
+                <a href={b.href} class="hover:text-paper">
+                  {b.label}
+                </a>
+              ) : (
+                <span aria-current="page" class="text-paper">
+                  {b.label}
+                </span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    <p class="eyebrow text-forge">{eyebrow}</p>
+    <h1 class="mt-4 max-w-4xl text-4xl font-extrabold sm:text-5xl lg:text-6xl">{title}</h1>
+    {lead && <p class="mt-6 max-w-2xl text-lg leading-relaxed text-steel-light">{lead}</p>}
+    <slot />
+  </div>
+</section>

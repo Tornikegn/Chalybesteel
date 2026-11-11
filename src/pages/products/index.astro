@@ -1,0 +1,57 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import CtaBand from "@/components/ui/CtaBand.astro";
+import ProductGlyph from "@/components/illustrations/ProductGlyph.astro";
+
+const products = (await getCollection("products")).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="Products — API 5CT Casing & Tubing"
+  description={
+    'API 5CT seamless casing (4½"–20"), tubing (1.050"–4½") and OCTG accessories, sourced from qualified mills with full documentation.'
+  }
+>
+  <PageHero
+    eyebrow="Products"
+    title="Seamless OCTG to API 5CT."
+    lead="Casing and tubing in Group 1–4 grades, PSL-1 to PSL-3, with API or premium connections. Accessories supplied on request to complete the string."
+    breadcrumbs={[{ label: "Home", href: "/" }, { label: "Products" }]}
+  />
+
+  <section class="py-16 sm:py-20">
+    <ul class="container-site space-y-6">
+      {products.map((p) => (
+        <li class="group relative grid gap-8 border border-line bg-white p-6 transition-colors hover:border-graphite sm:p-10 md:grid-cols-12 md:items-center">
+          <div class="md:col-span-4">
+            <ProductGlyph kind={p.data.kind} class="h-28 w-auto text-graphite" />
+          </div>
+          <div class="md:col-span-8">
+            <p class="spec-label text-steel-dark">{p.data.specLabel}</p>
+            <h2 class="mt-2 text-3xl font-bold">
+              <a href={`/products/${p.id}`} class="after:absolute after:inset-0">
+                {p.data.title}
+              </a>
+            </h2>
+            {p.data.sizeRange && (
+              <p class="num mt-1 font-mono text-forge-ink">{p.data.sizeRange}</p>
+            )}
+            <p class="mt-4 max-w-2xl text-steel-dark">{p.data.summary}</p>
+            <dl class="mt-6 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+              {p.data.facts.slice(1).map((f) => (
+                <div>
+                  <dt class="eyebrow text-steel-dark">{f.label}</dt>
+                  <dd class="mt-1 font-mono text-sm">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <CtaBand />
+</BaseLayout>

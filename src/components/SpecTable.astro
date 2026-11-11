@@ -1,0 +1,232 @@
+---
+/**
+ * Size/weight table rendered from the casingSizes or tubingSizes collection.
+ * Full table is server-rendered; the filter island only hides rows.
+ */
+import { getCollection } from "astro:content";
+import Verify from "@/components/Verify.astro";
+import VerifyLegend from "@/components/VerifyLegend.astro";
+import { useTranslations } from "@/i18n";
+
+interface Props {
+  kind: "casing" | "tubing";
+}
+const { kind } = Astro.props;
+const t = useTranslations(Astro.currentLocale);
+
+const fmt = (n: number | null, d = 2) => (n == null ? "—" : n.toFixed(d));
+const gradeOrder = [
+  "H40",
+  "J55",
+  "K55",
+  "M65",
+  "N80",
+  "L80",
+  "C90",
+  "R95",
+  "T95",
+  "C110",
+  "P110",
+  "Q125",
+];
+
+type Row = {
+  id: string;
+  od: string;
+  odIn: number;
+  cells: string[];
+  grades: string[];
+};
+
+let headers: string[];
+let rows: Row[];
+
+if (kind === "casing") {
+  const data = (await getCollection("casingSizes")).map((e) => e.data);
+  data.sort((a, b) => a.odIn - b.odIn || a.weightLbFt - b.weightLbFt);
+  headers = ["OD (in)", "OD (mm)", "Nominal weight (lb/ft)", "Wall (in)", "Wall (mm)", "ID (in)"];
+  rows = data.map((d) => ({
+    id: `${d.od}-${d.weightLbFt}`,
+    od: d.od,
+    odIn: d.odIn,
+    cells: [fmt(d.odMm), fmt(d.weightLbFt), fmt(d.wallIn, 3), fmt(d.wallMm), fmt(d.idIn, 3)],
+    grades: d.grades,
+  }));
+} else {
+  const data = (await getCollection("tubingSizes")).map((e) => e.data);
+  data.sort((a, b) => a.odIn - b.odIn || a.wallIn - b.wallIn);
+  headers = [
+    "OD (in)",
+    "OD (mm)",
+    "NUE (lb/ft)",
+    "EUE (lb/ft)",
+    "Wall (in)",
+    "Wall (mm)",
+    "ID (in)",
+  ];
+  rows = data.map((d) => ({
+    id: `${d.od}-${d.wallIn}`,
+    od: d.od,
+    odIn: d.odIn,
+    cells: [
+      fmt(d.odMm),
+      fmt(d.weightNueLbFt),
+      fmt(d.weightEueLbFt),
+      fmt(d.wallIn, 3),
+      fmt(d.wallMm),
+      fmt(d.idIn, 3),
+    ],
+    grades: d.grades,
+  }));
+}
+
+const ods = [...new Map(rows.map((r) => [r.od, r.odIn])).entries()];
+const grades = gradeOrder.filter((g) => rows.some((r) => r.grades.includes(g)));
+const pretty = (od: string) => od.replace("-", " ") + '"';
+const uid = `spec-${kind}`;
+---
+
+<div data-spec-table class="not-prose">
+  <div class="mb-4 hidden flex-wrap items-end gap-4" data-spec-filters>
+    <div>
+      <label for={`${uid}-od`} class="spec-label block text-steel-dark">
+        Filter by OD
+      </label>
+      <select
+        id={`${uid}-od`}
+        data-filter="od"
+        class="mt-1.5 min-w-40 rounded-sm border border-line bg-white px-3 py-2 font-mono text-sm"
+      >
+        <option value="">All sizes</option>
+        {ods.map(([od]) => (
+          <option value={od}>{pretty(od)}</option>
+        ))}
+      </select>
+    </div>
+    <div>
+      <label for={`${uid}-grade`} class="spec-label block text-steel-dark">
+        Filter by grade
+      </label>
+      <select
+        id={`${uid}-grade`}
+        data-filter="grade"
+        class="mt-1.5 min-w-40 rounded-sm border border-line bg-white px-3 py-2 font-mono text-sm"
+      >
+        <option value="">All grades</option>
+        {grades.map((g) => (
+          <option value={g}>{g}</option>
+        ))}
+      </select>
+    </div>
+    <button type="button" data-filter-reset class="btn-outline-light py-2">
+      Reset
+    </button>
+    <p class="ml-auto font-mono text-xs text-steel-dark" aria-live="polite" data-filter-count></p>
+  </div>
+
+  <div
+    class="overflow-x-auto border border-line bg-white"
+    tabindex="0"
+    role="region"
+    aria-labelledby={`${uid}-caption`}
+  >
+    <table class="num w-full min-w-[52rem] border-collapse text-left text-sm">
+      <caption id={`${uid}-caption`} class="sr-only">
+        {kind === "casing" ? "Casing" : "Tubing"}sizes, weights and typical grades
+      </caption>
+      <thead class="bg-graphite text-paper">
+        <tr>
+          {headers.map((h) => (
+            <th
+              scope="col"
+              class="px-3 py-3 font-mono text-xs font-medium tracking-wide whitespace-nowrap"
+            >
+              {h}
+              <Verify tone="dark" />
+            </th>
+          ))}
+          <th scope="col" class="px-3 py-3 font-mono text-xs font-medium tracking-wide">
+            Typical grades
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r, i) => {
+          const firstOfOd = i === 0 || rows[i - 1].od !== r.od;
+          return (
+            <tr
+              data-od={r.od}
+              data-grades={r.grades.join(" ")}
+              class:list={[
+                "hover:bg-paper",
+                firstOfOd && i > 0 && "border-t-2 border-t-line",
+                !firstOfOd && "border-t border-t-line/60",
+              ]}
+            >
+              <th scope="row" class="px-3 py-2.5 font-mono font-semibold whitespace-nowrap">
+                {pretty(r.od)}
+              </th>
+              {r.cells.map((c) => (
+                <td class="px-3 py-2.5 font-mono whitespace-nowrap text-graphite">{c}</td>
+              ))}
+              <td class="min-w-60 px-3 py-2.5">
+                <span class="flex flex-wrap gap-1">
+                  {r.grades.map((g) => (
+                    <span class="rounded-sm bg-paper px-1.5 py-0.5 font-mono text-[0.72rem] text-graphite">
+                      {g}
+                    </span>
+                  ))}
+                </span>
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-3 hidden font-mono text-sm text-steel-dark" data-filter-empty>
+    No sizes match this combination. Other sizes and weights may be available on request.
+  </p>
+  <div class="mt-4 space-y-2">
+    <p class="text-sm text-steel-dark">
+      <strong class="text-graphite">Note:</strong> {t("spec.indicative")} Grade availability varies
+      by size, weight and mill.
+    </p>
+    <VerifyLegend />
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-spec-table]").forEach((root) => {
+    const filters = root.querySelector<HTMLElement>("[data-spec-filters]");
+    const od = root.querySelector<HTMLSelectElement>('[data-filter="od"]');
+    const grade = root.querySelector<HTMLSelectElement>('[data-filter="grade"]');
+    const reset = root.querySelector<HTMLButtonElement>("[data-filter-reset]");
+    const count = root.querySelector<HTMLElement>("[data-filter-count]");
+    const empty = root.querySelector<HTMLElement>("[data-filter-empty]");
+    const rows = [...root.querySelectorAll<HTMLTableRowElement>("tbody tr")];
+    if (!filters || !od || !grade) return;
+    filters.classList.remove("hidden");
+    filters.classList.add("flex");
+
+    const apply = () => {
+      let shown = 0;
+      for (const row of rows) {
+        const okOd = !od.value || row.dataset.od === od.value;
+        const okGrade = !grade.value || (row.dataset.grades ?? "").split(" ").includes(grade.value);
+        row.hidden = !(okOd && okGrade);
+        if (!row.hidden) shown++;
+      }
+      if (count) count.textContent = `${shown} of ${rows.length} sizes`;
+      empty?.classList.toggle("hidden", shown > 0);
+    };
+    od.addEventListener("change", apply);
+    grade.addEventListener("change", apply);
+    reset?.addEventListener("click", () => {
+      od.value = "";
+      grade.value = "";
+      apply();
+    });
+    apply();
+  });
+</script>

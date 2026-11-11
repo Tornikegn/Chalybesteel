@@ -1,0 +1,50 @@
+---
+/** Line-drawn glyphs for product cards. Decorative. */
+interface Props {
+  kind: "casing" | "tubing" | "accessories";
+  class?: string;
+}
+const { kind, class: className = "" } = Astro.props;
+const stroke = "currentColor";
+---
+
+<svg
+  class={className}
+  viewBox="0 0 160 96"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+  stroke={stroke}
+  stroke-width="1.25"
+>
+  {kind === "casing" && (
+    <>
+      <rect x="8" y="22" width="112" height="52" />
+      <rect x="8" y="30" width="112" height="36" stroke-dasharray="2 3" opacity="0.5" />
+      <rect x="120" y="16" width="30" height="64" />
+      <path d="M124 16v64M146 16v64" opacity="0.5" />
+      <path d="M0 48h160" stroke-dasharray="10 3 2 3" opacity="0.4" />
+      <circle cx="64" cy="48" r="5" stroke="#D9622B" />
+    </>
+  )}
+  {kind === "tubing" && (
+    <>
+      <rect x="8" y="34" width="104" height="28" />
+      <path d="M112 30h8v36h-8z" />
+      <rect x="120" y="26" width="30" height="44" />
+      <path d="M8 40h104M8 56h104" stroke-dasharray="2 3" opacity="0.5" />
+      <path d="M0 48h160" stroke-dasharray="10 3 2 3" opacity="0.4" />
+      <circle cx="60" cy="48" r="4" stroke="#D9622B" />
+    </>
+  )}
+  {kind === "accessories" && (
+    <>
+      <rect x="6" y="30" width="40" height="36" />
+      <rect x="46" y="24" width="22" height="48" />
+      <path d="M68 34h22l12-6h52v40h-52l-12-6H68z" />
+      <path d="M50 24v48M64 24v48" opacity="0.5" />
+      <path d="M0 48h160" stroke-dasharray="10 3 2 3" opacity="0.4" />
+      <circle cx="128" cy="48" r="5" stroke="#D9622B" />
+    </>
+  )}
+</svg>

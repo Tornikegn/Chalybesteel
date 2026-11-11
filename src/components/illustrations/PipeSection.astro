@@ -1,0 +1,177 @@
+---
+/**
+ * Technical-drawing style pipe cross-section with a coupling thread detail.
+ * Echoes the logo's bore ring. Decorative: aria-hidden.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+
+// Thread profile: 8-round style zig-zag along the detail box
+const teeth = Array.from({ length: 14 }, (_, i) => {
+  const x = 372 + i * 9;
+  return `L${x + 4.5},468 L${x + 9},476`;
+}).join(" ");
+---
+
+<svg
+  class={className}
+  viewBox="0 0 560 560"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <pattern
+      id="ps-hatch"
+      width="7"
+      height="7"
+      patternUnits="userSpaceOnUse"
+      patternTransform="rotate(45)"
+    >
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#6B7480" stroke-width="1"></line>
+    </pattern>
+  </defs>
+
+  <!-- centre lines -->
+  <g stroke="#6B7480" stroke-width="0.75" stroke-dasharray="14 4 2 4">
+    <line x1="20" y1="260" x2="500" y2="260"></line>
+    <line x1="260" y1="20" x2="260" y2="500"></line>
+  </g>
+
+  <!-- pipe wall (hatched section) -->
+  <path
+    d="M260 70a190 190 0 1 0 0.01 0ZM260 108a152 152 0 1 1 -0.01 0Z"
+    fill="url(#ps-hatch)"
+    fill-rule="evenodd"
+    opacity="0.55"
+  ></path>
+  <circle cx="260" cy="260" r="190" stroke="#F3F2EF" stroke-width="1.5"></circle>
+  <circle cx="260" cy="260" r="152" stroke="#F3F2EF" stroke-width="1.5"></circle>
+
+  <!-- bore ring, logo echo -->
+  <circle cx="260" cy="260" r="58" stroke="#D9622B" stroke-width="2"></circle>
+  <circle cx="260" cy="260" r="40" stroke="#D9622B" stroke-width="1" opacity="0.6"></circle>
+
+  <!-- tick ring -->
+  <g stroke="#9AA3AD" stroke-width="1" opacity="0.5">
+    {Array.from({ length: 72 }, (_, i) => {
+      const a = (i * 5 * Math.PI) / 180;
+      const r1 = 200;
+      const r2 = i % 6 === 0 ? 212 : 206;
+      return (
+        <line
+          x1={(260 + r1 * Math.cos(a)).toFixed(2)}
+          y1={(260 + r1 * Math.sin(a)).toFixed(2)}
+          x2={(260 + r2 * Math.cos(a)).toFixed(2)}
+          y2={(260 + r2 * Math.sin(a)).toFixed(2)}
+        />
+      );
+    })}
+  </g>
+
+  <!-- OD dimension -->
+  <g stroke="#9AA3AD" stroke-width="1">
+    <line x1="70" y1="40" x2="70" y2="62"></line>
+    <line x1="450" y1="40" x2="450" y2="62"></line>
+    <line x1="70" y1="50" x2="450" y2="50"></line>
+    <path d="M70 50l9-4v8zM450 50l-9-4v8z" fill="#9AA3AD"></path>
+  </g>
+  <rect x="226" y="40" width="68" height="20" fill="#121417"></rect>
+  <text
+    x="260"
+    y="54"
+    text-anchor="middle"
+    font-family="IBM Plex Mono, monospace"
+    font-size="12"
+    fill="#F3F2EF"
+    letter-spacing="1"
+  >
+    OD
+  </text>
+
+  <!-- WT callout -->
+  <g stroke="#D9622B" stroke-width="1">
+    <line x1="394" y1="126" x2="368" y2="152"></line>
+    <line x1="394" y1="126" x2="470" y2="126"></line>
+  </g>
+  <circle cx="368" cy="152" r="3" fill="#D9622B"></circle>
+  <text
+    x="474"
+    y="130"
+    font-family="IBM Plex Mono, monospace"
+    font-size="12"
+    fill="#D9622B"
+    letter-spacing="1"
+  >
+    WT
+  </text>
+
+  <!-- ID callout -->
+  <g stroke="#9AA3AD" stroke-width="1">
+    <line x1="150" y1="330" x2="96" y2="384"></line>
+    <line x1="96" y1="384" x2="40" y2="384"></line>
+  </g>
+  <circle cx="150" cy="330" r="3" fill="#9AA3AD"></circle>
+  <text
+    x="40"
+    y="378"
+    font-family="IBM Plex Mono, monospace"
+    font-size="12"
+    fill="#9AA3AD"
+    letter-spacing="1"
+  >
+    ID / DRIFT
+  </text>
+
+  <!-- thread detail box -->
+  <g>
+    <rect
+      x="364"
+      y="430"
+      width="150"
+      height="84"
+      stroke="#9AA3AD"
+      stroke-width="1"
+      stroke-dasharray="3 3"
+    ></rect>
+    <path
+      d={`M372,476 ${teeth} L498,476`}
+      stroke="#F3F2EF"
+      stroke-width="1.5"
+      stroke-linejoin="round"
+    ></path>
+    <line x1="372" y1="490" x2="498" y2="490" stroke="#6B7480" stroke-width="1"></line>
+    <text
+      x="372"
+      y="448"
+      font-family="IBM Plex Mono, monospace"
+      font-size="10"
+      fill="#9AA3AD"
+      letter-spacing="1"
+    >
+      DETAIL A · THREAD
+    </text>
+    <text
+      x="372"
+      y="506"
+      font-family="IBM Plex Mono, monospace"
+      font-size="10"
+      fill="#6B7480"
+      letter-spacing="1"
+    >
+      API 5B
+    </text>
+  </g>
+  <line
+    x1="364"
+    y1="430"
+    x2="330"
+    y2="394"
+    stroke="#9AA3AD"
+    stroke-width="1"
+    stroke-dasharray="3 3"
+  ></line>
+</svg>

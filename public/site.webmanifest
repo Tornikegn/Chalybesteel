@@ -1,0 +1,32 @@
+{
+  "name": "Chalybe Steel",
+  "short_name": "Chalybe Steel",
+  "description": "API 5CT seamless casing and tubing (OCTG).",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#F3F2EF",
+  "theme_color": "#121417",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}

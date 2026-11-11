@@ -1,0 +1,117 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import CtaBand from "@/components/ui/CtaBand.astro";
+import Logo from "@/components/Logo.astro";
+import Photo from "@/components/ui/Photo.astro";
+import { photos } from "@/config/images";
+
+const values = [
+  {
+    t: "Precision",
+    d: "We work from the specification. Sizes, grades, connections, PSL and supplementary requirements are confirmed in writing before an order is placed.",
+  },
+  {
+    t: "Transparency",
+    d: "We are a trader, not a mill, and we say so. Mill test certificates and inspection reports travel with every shipment.",
+  },
+  {
+    t: "Accountability",
+    d: "One point of contact from enquiry to delivery, responsible for the order through production, inspection, documentation and freight.",
+  },
+  {
+    t: "Responsiveness",
+    d: "Clear answers and quotations without delay, so procurement and engineering teams can plan their wells.",
+  },
+];
+---
+
+<BaseLayout
+  title="About"
+  description="Chalybe Steel is an international trading and sourcing company supplying API 5CT seamless casing and tubing from qualified mills. Named after the Chalybes, early ironworkers of the Black Sea coast."
+>
+  <PageHero
+    eyebrow="About Chalybe Steel"
+    title="A trading company built around the specification."
+    breadcrumbs={[{ label: "Home", href: "/" }, { label: "About" }]}
+  />
+
+  <section class="py-16 sm:py-20" aria-labelledby="who">
+    <div class="container-site grid gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <h2 id="who" class="text-3xl font-bold">
+          Who we are
+        </h2>
+        <div class="prose-steel mt-6">
+          <p>
+            Chalybe Steel is an international trading and sourcing company supplying API 5CT
+            seamless casing and tubing to oil and gas operators, drilling contractors and
+            distributors.
+          </p>
+          <p>
+            We do not operate a mill. We select qualified manufacturers for each requirement, place
+            and follow the order through production and inspection, and deliver documented pipe to
+            port or project site. Our customers get one counterparty responsible for the whole
+            supply chain, and access to mill capacity matched to the size, grade and specification
+            they need.
+          </p>
+        </div>
+
+        <h2 class="mt-14 text-3xl font-bold">Our mission</h2>
+        <div class="prose-steel mt-6">
+          <p>
+            To make sourcing OCTG straightforward and reliable: the right pipe, to the right
+            specification, with the documents to prove it, delivered when the well needs it.
+          </p>
+        </div>
+      </div>
+
+      <aside class="lg:col-span-5" aria-labelledby="name">
+        <div class="relative overflow-hidden bg-ink p-8 text-paper sm:p-10">
+          <div class="bg-grid-dark absolute inset-0" aria-hidden="true"></div>
+          <div class="relative">
+            <Logo variant="dark" kind="mark" height={56} class="h-14 w-14" />
+            <h2 id="name" class="mt-8 text-2xl font-bold">
+              The name
+            </h2>
+            <p class="mt-4 leading-relaxed text-steel-light">
+              The Chalybes were an ancient people of the southern Black Sea coast whom Greek writers
+              credited with early ironworking. The Greek word for steel,{" "}
+              <em lang="grc-Latn">chalyps</em>, derives from their name.
+            </p>
+            <p class="mt-4 leading-relaxed text-steel-light">
+              We chose the name for that lineage: steel, and the trade routes that have carried it
+              between producers and users for thousands of years.
+            </p>
+            <p class="mt-8 font-mono text-xs tracking-widest text-forge">ΧΑΛΥΒΕΣ → χάλυψ → STEEL</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {photos.about.enabled && (
+    <figure class="container-site pb-16">
+      <Photo photo={photos.about} class="aspect-[21/9] border border-line" />
+    </figure>
+  )}
+  <section class="border-t border-line bg-white py-16 sm:py-20" aria-labelledby="values">
+    <div class="container-site">
+      <p class="eyebrow text-forge-ink">Values</p>
+      <h2 id="values" class="mt-3 text-3xl font-bold">
+        How we do business
+      </h2>
+      <ul class="mt-10 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+        {values.map((v, i) => (
+          <li class="bg-white p-7">
+            <span class="font-mono text-xs text-forge-ink">{String(i + 1).padStart(2, "0")}</span>
+            <h3 class="mt-3 text-xl font-semibold">{v.t}</h3>
+            <p class="mt-3 text-sm leading-relaxed text-steel-dark">{v.d}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>

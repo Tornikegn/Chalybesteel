@@ -1,0 +1,23 @@
+---
+/** Renders an optional photo slot only when enabled in src/config/images.ts. */
+import type { PhotoSlot } from "@/config/images";
+interface Props {
+  photo: PhotoSlot;
+  class?: string;
+}
+const { photo, class: className = "" } = Astro.props;
+---
+
+{photo.enabled ? (
+  <img
+    src={photo.src}
+    alt={photo.alt}
+    width={photo.width}
+    height={photo.height}
+    loading="lazy"
+    decoding="async"
+    class:list={["h-full w-full object-cover", className]}
+  />
+) : (
+  <slot />
+)}

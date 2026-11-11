@@ -1,0 +1,49 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Page not found"
+  description="The page you are looking for could not be found."
+  noindex
+>
+  <section class="relative overflow-hidden bg-ink text-paper">
+    <div class="bg-grid-dark absolute inset-0" aria-hidden="true"></div>
+    <div class="relative container-site grid min-h-[60vh] items-center gap-10 py-20 md:grid-cols-2">
+      <div>
+        <p class="eyebrow text-forge">Error 404 · No drift</p>
+        <h1 class="mt-4 text-4xl font-extrabold sm:text-5xl">This page could not be found.</h1>
+        <p class="mt-5 max-w-md text-steel-light">
+          The link may be out of date, or the page may have moved. Try the products overview or send
+          us your enquiry directly.
+        </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a href="/" class="btn-primary">
+            Back to home
+          </a>
+          <a href="/products" class="btn-outline-dark">
+            View Products
+          </a>
+        </div>
+      </div>
+      <svg viewBox="0 0 200 200" class="mx-auto w-full max-w-xs" fill="none" aria-hidden="true">
+        <circle cx="100" cy="100" r="92" stroke="#F3F2EF" stroke-width="1.25"></circle>
+        <circle cx="100" cy="100" r="72" stroke="#6B7480"></circle>
+        <circle
+          cx="100"
+          cy="100"
+          r="28"
+          stroke="#D9622B"
+          stroke-width="2"
+          stroke-dasharray="6 5"
+        ></circle>
+        <path
+          d="M0 100h200M100 0v200"
+          stroke="#6B7480"
+          stroke-width="0.5"
+          stroke-dasharray="8 3 2 3"
+        ></path>
+      </svg>
+    </div>
+  </section>
+</BaseLayout>

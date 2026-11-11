@@ -1,0 +1,13 @@
+---
+/** Visible placeholder for content that must be confirmed. Listed in TODO.md. */
+interface Props {
+  note: string;
+  tone?: "light" | "dark";
+}
+const { note, tone = "light" } = Astro.props;
+---
+
+<span
+  class:list={["todo", tone === "dark" && "border-forge/70! text-forge!"]}
+  data-todo={note}
+>{`{{TODO: ${note}}}`}</span>

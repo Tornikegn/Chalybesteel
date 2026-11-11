@@ -1,0 +1,30 @@
+---
+import { site, rfqMailto } from "@/config/site";
+interface Props {
+  title?: string;
+  text?: string;
+}
+const {
+  title = "Send us your specification.",
+  text = "Size, weight, grade, connection, PSL, quantity and destination. We review the requirement, select a qualified mill and return a quotation.",
+} = Astro.props;
+---
+
+<section class="relative overflow-hidden bg-graphite text-paper">
+  <div class="bg-grid-dark absolute inset-0" aria-hidden="true"></div>
+  <div class="relative container-site flex flex-col gap-8 py-16 md:flex-row md:items-center md:justify-between">
+    <div class="max-w-2xl">
+      <p class="eyebrow text-forge">Request for quotation</p>
+      <h2 class="mt-3 text-3xl font-bold sm:text-4xl">{title}</h2>
+      <p class="mt-4 text-steel-light">{text}</p>
+    </div>
+    <div class="flex shrink-0 flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
+      <a href="/request-a-quote" class="btn-primary">
+        Request a Quote
+      </a>
+      <a href={rfqMailto} class="btn-outline-dark font-mono">
+        {site.email}
+      </a>
+    </div>
+  </div>
+</section>

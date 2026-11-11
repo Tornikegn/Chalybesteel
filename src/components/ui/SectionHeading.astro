@@ -1,0 +1,27 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  tone?: "light" | "dark";
+  id?: string;
+}
+const { eyebrow, title, lead, tone = "light", id } = Astro.props;
+---
+
+<div class="max-w-3xl">
+  <p class:list={["eyebrow", tone === "dark" ? "text-forge" : "text-forge-ink"]}>{eyebrow}</p>
+  <h2 id={id} class="mt-3 text-3xl font-bold sm:text-4xl">
+    {title}
+  </h2>
+  {lead && (
+    <p
+      class:list={[
+        "mt-4 text-lg leading-relaxed",
+        tone === "dark" ? "text-steel-light" : "text-steel-dark",
+      ]}
+    >
+      {lead}
+    </p>
+  )}
+</div>

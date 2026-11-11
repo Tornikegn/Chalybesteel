@@ -1,0 +1,7 @@
+# Cloudflare Pages redirects. https://developers.cloudflare.com/pages/configuration/redirects/
+# www → apex is configured as a Cloudflare redirect rule (see README), not here.
+/contact            /request-a-quote   301
+/rfq                /request-a-quote   301
+/quote              /request-a-quote   301
+/grades             /grades-standards  301
+/quality            /quality-inspection 301

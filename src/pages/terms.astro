@@ -1,0 +1,81 @@
+---
+import LegalLayout from "@/layouts/LegalLayout.astro";
+import Todo from "@/components/Todo.astro";
+import { site } from "@/config/site";
+
+const operator = site.legalName || site.name;
+---
+
+<LegalLayout
+  title="Terms of Use"
+  description="Terms governing the use of chalybesteel.com, including the status of technical information, quotations and intellectual property."
+  updated="11 November 2026"
+>
+  {!site.legalName && (
+    <p>
+      <Todo note="add legal entity name, registered address and governing law before relying on these terms" />
+    </p>
+  )}
+
+  <h2>About these terms</h2>
+  <p>
+    These terms apply to your use of chalybesteel.com (the "website"), operated by {operator}
+    ("Chalybe Steel", "we", "us"). By using the website you accept these terms. If you do not accept
+    them, please do not use the website.
+  </p>
+
+  <h2>Information on this website</h2>
+  <p>
+    Product descriptions, size tables, grade data and other technical information are provided for
+    general reference only. They are indicative and may not reflect the current edition of API 5CT
+    or other standards. The specification of any supply is determined solely by the purchase order
+    and the documents agreed with us in writing.
+  </p>
+  <p>
+    While we take care to keep the website accurate, we make no warranty that the information is
+    complete, current or free of errors, and it should not be relied on for engineering design
+    without independent verification.
+  </p>
+
+  <h2>Quotations and orders</h2>
+  <p>
+    Nothing on this website is an offer to sell. Submitting an enquiry or request for quotation does
+    not create a contract. Any supply is subject to a written quotation and order confirmation, and
+    to the terms and conditions stated in them.
+  </p>
+
+  <h2>Trademarks and intellectual property</h2>
+  <p>
+    The Chalybe Steel name, logo, website design and content are our property or used with
+    permission. You may view and print pages for your own business use, but may not copy, reproduce
+    or distribute website content for other purposes without our written consent.
+  </p>
+  <p>
+    API and API 5CT are trademarks of the American Petroleum Institute. Chalybe Steel is a trading
+    company and is not an API-licensed manufacturer. Other standards and names referred to on this
+    website belong to their respective owners, and their mention does not imply endorsement or
+    affiliation.
+  </p>
+
+  <h2>Acceptable use</h2>
+  <p>
+    You must not use the website in a way that is unlawful, that interferes with its operation or
+    security, or that sends unsolicited or automated submissions.
+  </p>
+
+  <h2>Liability</h2>
+  <p>
+    To the extent permitted by law, we are not liable for any loss arising from the use of, or
+    reliance on, information on this website. Nothing in these terms limits liability that cannot be
+    limited by law.
+  </p>
+
+  <h2>Links to other websites</h2>
+  <p>We are not responsible for the content of external websites linked from this website.</p>
+
+  <h2>Changes and contact</h2>
+  <p>
+    We may update these terms at any time; the date above shows the latest version. Questions about
+    these terms can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.
+  </p>
+</LegalLayout>
